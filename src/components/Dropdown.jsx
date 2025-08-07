@@ -1,33 +1,54 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  createContext,
+  useContext,
+} from "react";
 
-const Dropdown = ({ trigger, children }) => {
-  const [open, setOpen] = useState(false);
+const DropdownContext = createContext();
+
+export const Dropdown = ({ children }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef();
 
   useEffect(() => {
-    const handleCliclOutside = (e) => {
+    const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setOpen(false);
+        setIsOpen(false);
       }
     };
-
-    document.addEventListener("mousedown", handleCliclOutside);
-    return () => document.addEventListener("mousedown", handleCliclOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
-    <div className="relative inline-block" ref={dropdownRef}>
-      <div onClick={() => setOpen(!open)} className="cursor-pointer">
-        {trigger}
+    <DropdownContext.Provider value={{ isOpen, setIsOpen }}>
+      <div ref={dropdownRef} className="relative">
+        {children}
       </div>
-
-      {open && (
-        <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 z-50">
-          {children}
-        </div>
-      )}
-    </div>
+    </DropdownContext.Provider>
   );
 };
 
-export default Dropdown;
+export const DropdownTrigger = ({ children }) => {
+  const { setIsOpen } = useContext(DropdownContext);
+  return <div onClick={() => setIsOpen((prev) => !prev)}>{children}</div>;
+};
+
+export const DropdownContent = ({ children }) => {
+  const { isOpen } = useContext(DropdownContext);
+  return isOpen ? (
+    <div className="absolute right-0 mt-2 w-64 bg-white text-black rounded shadow-lg z-10 p-3">
+      {children}
+    </div>
+  ) : null;
+};
+
+export const DropdownItem = ({ children }) => {
+  return (
+    <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer rounded">
+      {children}
+    </div>
+  );
+};

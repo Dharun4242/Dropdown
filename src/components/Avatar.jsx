@@ -1,20 +1,15 @@
 import React from "react";
 
-const Avatar = ({
-  src,
-  alt = "User Avatar",
-  fallback = "?",
-  className = "",
-}) => {
-  const baseClass = `w-10 h-10 rounded-full text-white flex items-center justify-center font-semibold`;
-
+const Avatar = ({ src, fallback, className = "" }) => {
   return (
-    <div className={`${baseClass}  ${className}`}>
+    <div
+      className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${className}`}
+    >
       {src ? (
         <img
           src={src}
-          alt={alt}
-          className="w-full h-full rounded-full object-cover"
+          alt="Avatar"
+          className="w-full h-full object-cover rounded-full"
         />
       ) : (
         fallback
